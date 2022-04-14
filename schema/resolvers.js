@@ -6,8 +6,14 @@ const resolvers = {
 
     Query: {
         //USERS RESOLVERS
-        users: () => {
-            return UserList;
+        users: (parent,args,context,info) => {
+           // console.log(context)
+            if(UserList){
+                return {users:UserList};
+            } 
+            else{
+                return {message:'there was an error',statusCode:500};
+            }
         },
         user: (parent, args) => {
             const id = args.id;
@@ -37,12 +43,14 @@ const resolvers = {
             const {id,updatedUserName}=args.input;
             let updatedUser;
             UserList.forEach((user) => {
+                console.log("user",user);
                 if(Number(user.id) == Number(id))
                 {
                     user.username=updatedUserName;
                     updatedUser=user;
                 }
             })
+            console.log("updated",updatedUser);
             return updatedUser;
         },
         deleteUser:(parent,args) => {
@@ -56,6 +64,21 @@ const resolvers = {
             return _.filter(MovieList, (movie) =>
                 movie.yearOfPublication > 2000 && movie.yearOfPublication < 2010
             );
+        }
+    },
+
+    UsersResult: {
+        __resolveType (obj) {
+            if(obj.users)
+            {
+                return "UsersSuccessfulResult";
+            }
+            if(obj.message)
+            {
+                return "UsersErrorResult";
+            }
+            return null;
+
         }
     }
 }

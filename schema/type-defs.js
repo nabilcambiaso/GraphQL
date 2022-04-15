@@ -47,6 +47,10 @@ yearOfPublication: Int,
 isInTheaters: Boolean,
 }
 
+type Subscription {
+  userCreated: User
+}
+
 enum Nationality{
 CANADA
 BRAZIL

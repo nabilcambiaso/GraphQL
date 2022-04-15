@@ -1,7 +1,8 @@
 const { UserList, MovieList } = require("../fakeData");
 const _ = require("lodash");
+const {PubSub} = require('graphql-subscriptions');
 
-
+const pubSub= new PubSub();
 const resolvers = {
 
     Query: {
@@ -32,11 +33,16 @@ const resolvers = {
         }
     },
     Mutation:{
-        createUser: (parent,args)=>{
+        createUser:  (parent,args)=>{
             const user=args.input;
             const id=Number(UserList[UserList.length-1].id)+1;
             user.id= id;
-            UserList.push(user);
+             UserList.push(user);
+            pubSub.publish("USER_CREATED",{
+                userCreated:{
+                    username:user.username
+                }
+            })
             return user;
         },
         updateUserName: (parent,args) => {
@@ -57,6 +63,11 @@ const resolvers = {
            const id=args.id;
            _.remove(UserList,(user)=> user.id === Number(id) );
            return null;
+        }
+    },
+    Subscription: {
+        userCreated:{
+            subscribe:()=> pubSub.asyncIterator("USER_CREATED")
         }
     },
     User: {
@@ -81,6 +92,8 @@ const resolvers = {
 
         }
     }
+
+
 }
 
 module.exports = { resolvers };

@@ -34,12 +34,16 @@ const resolvers = {
     Mutation: {
         createAccount: async (parent, args) => {
             const account = await insertAccount(args.input);
-            console.log(account)
+            await pubSub.publish("ACCOUNT_CREATED",{
+                accountCreated:account
+            })
             return account;
         },
         createTransaction: async (parent, args) => {
             const transaction = await insertTransaction(args.input)
-            console.log(42, transaction)
+            await pubSub.publish("TRANSACTION_CREATED",{
+                transactionCreated:transaction
+            })
             return transaction;
         }
     },

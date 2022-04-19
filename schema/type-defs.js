@@ -4,70 +4,47 @@ const { gql } = require("apollo-server");
 const typeDefs = gql`
 
 type Query {
-users: UsersResult
-user (id:ID!): User
-movies: [Movie!]!
-movie(name: String!): Movie
+transactions: TransactionsResult
 }
+
 
 #mutate data (similar to post, put, delete)
 type Mutation {
-createUser( input: createUserInput! ): User
-updateUserName ( input: updateUserNameInput! ): User
-deleteUser (id:ID!): User
+createTransaction( input: createTransactionInput! ): Transaction
 }
 
-input updateUserNameInput {
-id:ID!
-updatedUserName:String!
+
+
+input createTransactionInput {
+    account_name: String!
+ note: String
+ balance: Int!
 }
 
-input createUserInput {
- name: String!
- username: String!
- age: Int = 18
- nationality: Nationality
-}
-
-type User {
+type Transaction {
  id:ID!,
- name: String!
- username: String
- age: Int!
- nationality: Nationality!
- friends: [User]
- favoriteMovies: [Movie]
+ account_name: String!
+ note: String
+ balance: Int!
 
 }
 
-type Movie {
-id: ID,
-name: String,
-yearOfPublication: Int,
-isInTheaters: Boolean,
-}
+
 
 type Subscription {
-  userCreated: User
+  transactionCreated: Transaction
 }
 
-enum Nationality{
-CANADA
-BRAZIL
-CHILE
-INDIA
-GERMANY
+
+type TransactionsSuccessfulResult {
+transactions: [Transaction!]!
 }
 
-type UsersSuccessfulResult {
-users: [User!]!
-}
-
-type UsersErrorResult {
+type TransactionsErrorResult {
 message: String!
 statusCode:Int!
 }
 
-union UsersResult = UsersSuccessfulResult | UsersErrorResult
+union TransactionsResult = TransactionsSuccessfulResult | TransactionsErrorResult
 `
 module.exports = { typeDefs };

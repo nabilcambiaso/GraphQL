@@ -1,4 +1,4 @@
-const { UserList, MovieList } = require("../fakeData");
+const { TransactionsList } = require("../fakeData");
 const _ = require("lodash");
 const {PubSub} = require('graphql-subscriptions');
 
@@ -6,87 +6,47 @@ const pubSub= new PubSub();
 const resolvers = {
 
     Query: {
-        //USERS RESOLVERS
-        users: (parent,args,context,info) => {
+        //TRANSACTIONS RESOLVERS
+        transactions: (parent,args,context,info) => {
            // console.log(context)
-            if(UserList){
-                return {users:UserList};
+            if(TransactionsList){
+                return {transactions:TransactionsList};
             } 
             else{
                 return {message:'there was an error',statusCode:500};
             }
-        },
-        user: (parent, args) => {
-            const id = args.id;
-            const user = _.find(UserList, { id: Number(id) })
-            return user;
-        },
-
-        //MOVIES RESOLVERS
-        movies: () => {
-            return MovieList;
-        },
-        movie: (parent, args) => {
-            const name = args.name;
-            const movie = _.find(MovieList, { name })
-            return movie;
         }
+
     },
     Mutation:{
-        createUser:  (parent,args)=>{
-            const user=args.input;
-            const id=Number(UserList[UserList.length-1].id)+1;
-            user.id= id;
-             UserList.push(user);
-            pubSub.publish("USER_CREATED",{
-                userCreated:{
-                    username:user.username
+        createTransaction:  (parent,args)=>{
+            const transaction=args.input;
+            const id=Number(TransactionsList[TransactionsList.length-1].id)+1;
+            transaction.id= id;
+             TransactionsList.push(transaction);
+            pubSub.publish("TRANSACTION_CREATED",{
+                transactionCreated:{
+                    account_name:transaction.account_name
                 }
             })
-            return user;
-        },
-        updateUserName: (parent,args) => {
-            const {id,updatedUserName}=args.input;
-            let updatedUser;
-            UserList.forEach((user) => {
-                console.log("user",user);
-                if(Number(user.id) == Number(id))
-                {
-                    user.username=updatedUserName;
-                    updatedUser=user;
-                }
-            })
-            console.log("updated",updatedUser);
-            return updatedUser;
-        },
-        deleteUser:(parent,args) => {
-           const id=args.id;
-           _.remove(UserList,(user)=> user.id === Number(id) );
-           return null;
+            return transaction;
         }
     },
     Subscription: {
-        userCreated:{
-            subscribe:()=> pubSub.asyncIterator("USER_CREATED")
-        }
-    },
-    User: {
-        favoriteMovies: () => {
-            return _.filter(MovieList, (movie) =>
-                movie.yearOfPublication > 2000 && movie.yearOfPublication < 2010
-            );
+        transactionCreated:{
+            subscribe:()=> pubSub.asyncIterator("TRANSACTION_CREATED")
         }
     },
 
-    UsersResult: {
+    TransactionsResult: {
         __resolveType (obj) {
-            if(obj.users)
+            if(obj.transactions)
             {
-                return "UsersSuccessfulResult";
+                return "TransactionsSuccessfulResult";
             }
             if(obj.message)
             {
-                return "UsersErrorResult";
+                return "TransactionsErrorResult";
             }
             return null;
 

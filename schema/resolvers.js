@@ -24,7 +24,7 @@ const resolvers = {
         transactions: async (parent, args, context, info) => {
             const data = await selectTransaction();
             if (data) {
-                return { accounts: data };
+                return { transactions: data };
             }
             else {
                 return { message: 'there was an error', statusCode: 500 };

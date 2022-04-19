@@ -1,59 +1,85 @@
-const { TransactionsList } = require("../fakeData");
+const { PubSub } = require('graphql-subscriptions');
+const {
+    selectAccounts,
+    selectTransaction,
+    selectTransactionByAccountId,
+    insertAccount,
+    insertTransaction
+} = require("./dao/index");
+const { TransactionsList, AccountsList } = require("../fakeData");
 const _ = require("lodash");
-const {PubSub} = require('graphql-subscriptions');
 
-const pubSub= new PubSub();
+const pubSub = new PubSub();
 const resolvers = {
-
     Query: {
-        //TRANSACTIONS RESOLVERS
-        transactions: (parent,args,context,info) => {
-           // console.log(context)
-            if(TransactionsList){
-                return {transactions:TransactionsList};
-            } 
-            else{
-                return {message:'there was an error',statusCode:500};
+        accounts: async (parent, args, context, info) => {
+            const data = await selectAccounts();
+            if (data) {
+                return { accounts: data };
+            }
+            else {
+                return { message: 'there was an error', statusCode: 500 };
+            }
+        },
+        transactions: async (parent, args, context, info) => {
+            const data = await selectTransaction();
+            if (data) {
+                return { accounts: data };
+            }
+            else {
+                return { message: 'there was an error', statusCode: 500 };
             }
         }
-
     },
-    Mutation:{
-        createTransaction:  (parent,args)=>{
-            const transaction=args.input;
-            const id=Number(TransactionsList[TransactionsList.length-1].id)+1;
-            transaction.id= id;
-             TransactionsList.push(transaction);
-            pubSub.publish("TRANSACTION_CREATED",{
-                transactionCreated:{
-                    account_name:transaction.account_name
-                }
-            })
+    Mutation: {
+        createAccount: async (parent, args) => {
+            const account = await insertAccount(args.input);
+            console.log(account)
+            return account;
+        },
+        createTransaction: async (parent, args) => {
+            const transaction = await insertTransaction(args.input)
+            console.log(42, transaction)
             return transaction;
         }
     },
-    Subscription: {
-        transactionCreated:{
-            subscribe:()=> pubSub.asyncIterator("TRANSACTION_CREATED")
+    Account: {
+        transactions: async (account) => {
+            return await selectTransactionByAccountId({
+                account_id: account.id
+            })
         }
     },
-
+    Subscription: {
+        accountCreated: {
+            subscribe: () => pubSub.asyncIterator("ACCOUNT_CREATED")
+        },
+        transactionCreated: {
+            subscribe: () => pubSub.asyncIterator("TRANSACTION_CREATED")
+        }
+    },
+    AccountsResult: {
+        __resolveType(obj) {
+            if (obj.accounts) {
+                return "AccountSuccessfulResult";
+            }
+            if (obj.message) {
+                return "AccountsErrorResult";
+            }
+            return null;
+        }
+    },
     TransactionsResult: {
-        __resolveType (obj) {
-            if(obj.transactions)
-            {
+        __resolveType(obj) {
+            if (obj.transactions) {
                 return "TransactionsSuccessfulResult";
             }
-            if(obj.message)
-            {
+            if (obj.message) {
                 return "TransactionsErrorResult";
             }
             return null;
-
         }
     }
-
-
 }
 
 module.exports = { resolvers };

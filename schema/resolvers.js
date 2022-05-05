@@ -4,6 +4,7 @@ const {
     selectTransaction,
     selectTransactionByAccountId,
     insertAccount,
+    removeAccount,
     insertTransaction
 } = require("./dao/index");
 const { TransactionsList, AccountsList } = require("../fakeData");
@@ -37,6 +38,10 @@ const resolvers = {
             await pubSub.publish("ACCOUNT_CREATED", {
                 accountCreated: account
             })
+            return account;
+        },
+        deleteAccount: async (parent, args) => {
+            const account = await removeAccount(args.input.id);
             return account;
         },
         createTransaction: async (parent, args) => {

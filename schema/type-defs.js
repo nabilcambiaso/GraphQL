@@ -13,6 +13,7 @@ type Query {
 type Mutation {
   createAccount( input: createAccountsInput! ): Account
   createTransaction( input: createTransactionInput! ): Transaction
+  deleteAccount( input: deleteAccountsInput! ): Int
 }
 
 input createTransactionInput {
@@ -25,19 +26,18 @@ input createAccountsInput {
   balance: Float!
   initial_balance: Float!
   note: String!
-  opening_date: Date!
+}
+
+input deleteAccountsInput {
+  id: Int!
 }
 
 type Account {
   id: Int!
   name: String!
   balance: Float!
-  initial_balance: Float!
   note: String!
-  opening_date: Date
   transactions: [Transaction]
-  created_at: Date
-  updated_at: Date
 }
 
 type Transaction {

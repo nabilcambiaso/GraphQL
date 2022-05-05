@@ -1,4 +1,4 @@
-const { selectAccounts, insertAccount } = require("./account")
+const { selectAccounts, insertAccount, removeAccount } = require("./account")
 const { selectTransaction, selectTransactionByAccountId, insertTransaction } = require("./transaction")
 
 module.exports = {
@@ -6,5 +6,6 @@ module.exports = {
   selectTransaction,
   selectTransactionByAccountId,
   insertAccount,
+  removeAccount,
   insertTransaction
 }

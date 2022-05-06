@@ -7,8 +7,6 @@ const {
     removeAccount,
     insertTransaction
 } = require("./dao/index");
-const { TransactionsList, AccountsList } = require("../fakeData");
-const _ = require("lodash");
 
 const pubSub = new PubSub();
 const resolvers = {
@@ -34,6 +32,7 @@ const resolvers = {
     },
     Mutation: {
         createAccount: async (parent, args) => {
+            console.log(args)
             const account = await insertAccount(args.input);
             await pubSub.publish("ACCOUNT_CREATED", {
                 accountCreated: account

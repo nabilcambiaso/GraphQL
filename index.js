@@ -6,8 +6,13 @@ const { createServer } = require('http');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
+const pg = require('pg');
+
 
 (async function () {
+  
+
+
     const app = express();
     const httpServer = createServer(app);
 

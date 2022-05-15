@@ -16,16 +16,16 @@ const removeAccount = async (id) => {
 }
 
 const selectAccounts = async () => {
-  // const accountList = await knex("account").select('*');
-  const accountList = []
-  for (let i = 0; i < 5; i++) {
-    accountList.push({
-      id: i,
-      balance: i,
-      name: `Account name ${i}`,
-      note: `Account note ${i}`,
-    })
-  }
+  const accountList = await knex("account").select('*');
+  // const accountList = []
+  // for (let i = 0; i < 5; i++) {
+  //   accountList.push({
+  //     id: i,
+  //     balance: i,
+  //     name: `Account name ${i}`,
+  //     note: `Account note ${i}`,
+  //   })
+  // }
   return accountList;
 }
 

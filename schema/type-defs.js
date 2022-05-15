@@ -23,8 +23,8 @@ input createTransactionInput {
 
 input createAccountsInput {
   name: String!
-  balance: Float!
-  initial_balance: Float!
+  balance: Float
+  initial_balance: Float
   note: String!
 }
 
@@ -35,7 +35,9 @@ input deleteAccountsInput {
 type Account {
   id: Int!
   name: String!
-  balance: Float!
+  balance: Float
+  initial_balance: Float
+  opening_date:Date
   note: String!
   transactions: [Transaction]
 }
@@ -49,8 +51,10 @@ type Transaction {
 }
 
 type Subscription {
-  accountCreated: Account!
+  accountCreated: Account!,
+  accountDeleted: Account,
   transactionCreated: Transaction!
+  transactionUpdated: Transaction!
 }
 
 type AccountSuccessfulResult {
